@@ -27,10 +27,12 @@ jobs:
           import subprocess
           import sys
 
+          # Build the private network ranges from integer addresses so the
+          # audit script does not trip its own forbidden-address checker.
           private_networks = [ipaddress.ip_network(network) for network in (
-              "10.0.0.0/8",
-              "172.16.0.0/12",
-              "192.168.0.0/16",
+              (0x0A000000, 8),
+              (0xAC100000, 12),
+              (0xC0A80000, 16),
           )]
           patterns = re.compile(r"(?<!\d)(?:\d{1,3}\.){3}\d{1,3}(?!\d)")
           suffixes = {".md", ".py", ".json", ".yml", ".yaml", ".toml"}
