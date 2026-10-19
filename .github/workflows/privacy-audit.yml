@@ -1,0 +1,61 @@
+name: Check for private LAN addresses
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Reject RFC1918 addresses in project code and documentation
+        run: |
+          python - <<'PY'
+          import ipaddress
+          import pathlib
+          import re
+          import subprocess
+          import sys
+
+          private_networks = [ipaddress.ip_network(network) for network in (
+              "10.0.0.0/8",
+              "172.16.0.0/12",
+              "192.168.0.0/16",
+          )]
+          patterns = re.compile(r"(?<!\d)(?:\d{1,3}\.){3}\d{1,3}(?!\d)")
+          suffixes = {".md", ".py", ".json", ".yml", ".yaml", ".toml"}
+          tracked = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")
+          found = []
+          for filename in tracked:
+              if not filename:
+                  continue
+              path = pathlib.Path(filename)
+              if path.suffix not in suffixes:
+                  continue
+              # The vendored third-party library is maintained upstream.
+              if "_vendor" in path.parts:
+                  continue
+              for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+                  for match in patterns.finditer(line):
+                      try:
+                          ip = ipaddress.ip_address(match.group())
+                      except ValueError:
+                          continue
+                      if any(ip in private_network for private_network in private_networks):
+                          found.append((filename, line_number))
+          if found:
+              for filename, line_number in found:
+                  print(f"Private address in {filename}:{line_number}")
+              sys.exit(1)
+          print("PASS: no RFC1918 addresses in tracked project documentation/source")
+          PY
