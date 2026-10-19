@@ -52,10 +52,10 @@ source **before** the vendored directory has been generated will fail.
 > **Current state:** preview only. Do not install on your production HA OS
 > until the isolated build passes and the integration is validated in HA.
 >
-> The repository was created **private**. HACS needs appropriate GitHub
-> access to a private custom repository. If HACS cannot find it, consider
-> changing its visibility to public after reviewing the code, or use a
-> manual installation for testing.
+> This repository was created **private**, but HACS requires a **public
+> GitHub repository**. Change its visibility to public before adding it
+> as a HACS custom repository. For private development/testing, you can
+> install the generated component files manually.
 
 1. In Home Assistant, open **HACS → ⋮ → Custom repositories**.
 2. Enter `https://github.com/razvanu/python-kasa-tapo` and select **Integration**.
