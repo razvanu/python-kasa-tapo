@@ -1,0 +1,19 @@
+{
+  "domain": "tapo_tpap",
+  "name": "Tapo TPAP v2 (Experimental)",
+  "version": "0.2.0-beta.2",
+  "documentation": "https://github.com/razvanu/python-kasa-tapo",
+  "issue_tracker": "https://github.com/razvanu/python-kasa-tapo/issues",
+  "codeowners": [
+    "@razvanu"
+  ],
+  "config_flow": true,
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "requirements": [
+    "asyncclick>=8.1.7,<10",
+    "mashumaro>=3.20,<4",
+    "ecdsa>=0.19.1,<1",
+    "passlib>=1.7.4,<2"
+  ]
+}
