@@ -1,4 +1,4 @@
-"""P115 power relay. For Tesla AC use the Broadlink IR commands instead."""
+"""P115 power relay. For air conditioners, use the appliance's own controls instead."""
 from __future__ import annotations
 
 from homeassistant.components.switch import SwitchEntity
