@@ -6,15 +6,16 @@ to coexist with the built-in TP-Link Smart Home integration (`tplink`).
 
 ## Tested devices (19 October 2026)
 
-| Plug | IP address | Hardware | Firmware | TPAP v2 read |
-|---|---|---|---|---|
-| AC Dormitor Tesla | `192.168.10.186` | P115 EU 1.0 | 1.4.0 Build 251020 | PASS |
-| AC Sufragerie | `192.168.10.150` | P115 EU 1.0 | 1.4.8 Build 260804 | PASS |
+| Test device | Hardware | Firmware | TPAP v2 read |
+|---|---|---|---|
+| P115 A | P115 EU 1.0 | 1.4.0 | PASS |
+| P115 B | P115 EU 1.0 | 1.4.8 | PASS |
 
 **Scope of testing:** read-only `kasa state` on Windows 11 using the
 experimental [TPAP PR #1592](https://github.com/python-kasa/python-kasa/pull/1592).
-The Home Assistant integration itself and relay switching have **not yet
-been verified against live hardware**.
+The integration's power, voltage, current and energy sensors have subsequently
+been observed working in Home Assistant. Relay switching has **not been tested
+on live hardware**.
 
 ## Features
 
@@ -27,8 +28,8 @@ been verified against live hardware**.
 - No MQTT, separate LXC, or constantly running Windows computer required.
 
 **IMPORTANT:** The relay switch, when enabled, cuts the plug's AC output.
-For the Tesla air conditioner, continue using Broadlink IR instead.
-Do not interrupt power while its compressor is running.
+For equipment such as air conditioners, use the appliance's own controls
+rather than cutting its mains supply during operation.
 
 ## Dependency isolation
 
@@ -49,21 +50,17 @@ source **before** the vendored directory has been generated will fail.
 
 ## HACS installation (after successful verification)
 
-> **Current state:** preview only. Do not install on your production HA OS
-> until the isolated build passes and the integration is validated in HA.
->
-> This repository was created **private**, but HACS requires a **public
-> GitHub repository**. Change its visibility to public before adding it
-> as a HACS custom repository. For private development/testing, you can
-> install the generated component files manually.
+> **Current state:** experimental beta. The isolated build has passed and basic
+> P115 telemetry has been observed in Home Assistant. Relay write behavior
+> remains unverified; leave relay switches disabled until individually tested.
 
 1. In Home Assistant, open **HACS → ⋮ → Custom repositories**.
 2. Enter `https://github.com/razvanu/python-kasa-tapo` and select **Integration**.
 3. Download **Tapo TPAP v2 (P115)**, then restart Home Assistant.
 4. Go to **Settings → Devices & services → Add integration**.
 5. Search for **Tapo TPAP v2 (Experimental)**.
-6. Add `192.168.10.186` with Tapo email/password.
-7. Repeat for `192.168.10.150`; each plug gets a separate device.
+6. Add your first P115 using the IP address shown in its Tapo app and your Tapo account credentials.
+7. Repeat with the IP of your second P115; each plug gets a separate device.
 8. Inspect sensors and device diagnostics before enabling relay switch entities.
 
 The account password is kept in HA config entry storage, **never in GitHub**.
@@ -81,8 +78,8 @@ Use IP reservations in your router for both devices.
 
 ### Known limitations
 
-- No HA OS hardware validation yet: entity registration and switch writes
-  should be tested in a staging HA instance first.
+- Basic HA sensor entity values have been observed. Relay switching is
+  unverified and should be tested with a non-critical load first.
 - Device configuration currently checks IP syntax but does not confirm
   credentials until the first poll. Incorrect credentials cause retry.
 - The sensor values for daily/monthly energy reset over time; they must not
@@ -102,4 +99,4 @@ This repository's existing MIT license applies to original integration
 code where separately applicable; redistribution of the combined package
 must also comply with the vendored GPL terms.
 
-**Project status:** early beta / untested in Home Assistant OS.
+**Project status:** early beta. Read-only Home Assistant sensor functionality observed; relay writes unverified.
